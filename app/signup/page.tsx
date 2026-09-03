@@ -8,7 +8,6 @@ export default function SignupPage() {
   const [pw, setPw] = useState('');
   const [name, setName] = useState('');
   const [err, setErr] = useState('');
-  const [done, setDone] = useState(false);
   const [busy, setBusy] = useState(false);
 
   async function submit(e: React.FormEvent) {
@@ -21,22 +20,12 @@ export default function SignupPage() {
       body: JSON.stringify({ email, password: pw, name }),
     });
     const data = await res.json().catch(() => ({}));
-    setBusy(false);
-    if (!res.ok) setErr(data.error ?? 'Signup failed.');
-    else setDone(true);
-  }
-
-  if (done) {
-    return (
-      <div className="auth-wrap">
-        <div className="auth-card">
-          <div className="logo" style={{ padding: '0 0 6px' }}>lead<b>jet</b></div>
-          <h1>Check your email</h1>
-          <div className="note ok">We sent a verification link to <b>{email}</b>. Click it, then sign in.</div>
-          <p className="alt"><Link href="/login">Back to sign in</Link></p>
-        </div>
-      </div>
-    );
+    if (!res.ok) {
+      setBusy(false);
+      setErr(data.error ?? 'Signup failed.');
+      return;
+    }
+    window.location.href = '/login?created=1';
   }
 
   return (

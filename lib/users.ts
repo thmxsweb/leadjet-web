@@ -1,37 +1,19 @@
-import { ObjectId } from 'mongodb';
-import { col } from './mongo';
-
-export interface UserDoc {
-  _id?: ObjectId;
-  email: string;
-  name?: string;
-  passwordHash: string;
-  emailVerified: Date | null;
-  createdAt: Date;
-}
-
-export async function users() {
-  return col<UserDoc>('users');
-}
+import { dbConnect } from './db';
+import { User, type UserDoc } from './models/User';
 
 export async function getUserByEmail(email: string): Promise<UserDoc | null> {
-  return (await users()).findOne({ email: email.toLowerCase() });
+  await dbConnect();
+  return User.findOne({ email: email.toLowerCase() }).lean<UserDoc>();
 }
 
-export async function createUser(email: string, passwordHash: string, name?: string): Promise<ObjectId> {
-  const res = await (await users()).insertOne({
+/** Create a user. Email verification is disabled for now, so accounts are active immediately. */
+export async function createUser(email: string, passwordHash: string, name?: string): Promise<string> {
+  await dbConnect();
+  const doc = await User.create({
     email: email.toLowerCase(),
     passwordHash,
     ...(name ? { name } : {}),
-    emailVerified: null,
-    createdAt: new Date(),
+    emailVerified: new Date(),
   });
-  return res.insertedId;
-}
-
-export async function markVerified(email: string): Promise<void> {
-  await (await users()).updateOne(
-    { email: email.toLowerCase() },
-    { $set: { emailVerified: new Date() } },
-  );
+  return doc._id.toString();
 }

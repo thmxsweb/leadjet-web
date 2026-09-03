@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
-import { sendVerifyEmail } from '@/lib/mail';
-import { createVerifyToken } from '@/lib/tokens';
 import { createUser, getUserByEmail } from '@/lib/users';
 
 const schema = z.object({
@@ -24,10 +22,8 @@ export async function POST(req: Request) {
     }
     const hash = await bcrypt.hash(password, 10);
     await createUser(email, hash, name);
-    const token = await createVerifyToken(email);
-    const base = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
-    await sendVerifyEmail(email, `${base}/api/auth/verify?token=${token}`);
-    return NextResponse.json({ ok: true });
+    // Email verification is disabled for now (no sending domain) — account is active.
+    return NextResponse.json({ ok: true, verified: true });
   } catch (err) {
     return NextResponse.json({ error: err instanceof Error ? err.message : 'Signup failed.' }, { status: 500 });
   }

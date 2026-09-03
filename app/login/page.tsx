@@ -11,7 +11,7 @@ function LoginForm() {
   const [pw, setPw] = useState('');
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
-  const verified = sp.get('verified');
+  const created = sp.get('created');
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -27,7 +27,7 @@ function LoginForm() {
     <form onSubmit={submit} className="auth-card">
       <div className="logo" style={{ padding: '0 0 6px' }}>lead<b>jet</b></div>
       <h1>Sign in</h1>
-      {verified ? <div className="note ok">Email verified. You can sign in now.</div> : null}
+      {created ? <div className="note ok">Account created. Sign in below.</div> : null}
       {err ? <div className="note bad">{err}</div> : null}
       <label>Email</label>
       <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
