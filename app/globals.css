@@ -80,3 +80,13 @@ tbody tr:hover td{background:var(--elev)}
   .side.open{transform:none}
   .view{padding:16px 14px 60px}.twrap{max-height:none}
 }
+
+.auth-wrap{min-height:100vh;display:grid;place-items:center;padding:24px}
+.auth-card{width:360px;max-width:92vw;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column}
+.auth-card h1{font-size:19px;margin:2px 0 14px;letter-spacing:-.02em}
+.auth-card label{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut);margin:8px 0 5px}
+.auth-card input{height:38px}
+.auth-card .alt{color:var(--mut);font-size:12.5px;margin:14px 0 0;text-align:center}
+.note{font-size:12.5px;padding:9px 11px;border-radius:8px;margin-bottom:6px}
+.note.ok{background:rgba(52,179,122,.14);color:var(--green)}
+.note.bad{background:var(--red-dim);color:var(--red-h)}
