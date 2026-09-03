@@ -20,7 +20,7 @@ function LoginForm() {
     const res = await signIn('credentials', { email, password: pw, redirect: false });
     setBusy(false);
     if (res?.error) setErr('Invalid credentials, or your email is not verified yet.');
-    else window.location.href = '/';
+    else window.location.href = sp.get('callbackUrl') || '/';
   }
 
   return (
