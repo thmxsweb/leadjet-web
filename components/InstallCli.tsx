@@ -7,9 +7,9 @@ const REL = 'https://github.com/thmxsweb/leadjet/releases/latest/download';
 const NPM = 'npm i -g @thmxsweb/leadjet';
 
 const OPTIONS = [
-  { key: 'win', label: 'Windows', sub: 'leadjet-win.exe', href: `${REL}/leadjet-win.exe` },
-  { key: 'mac', label: 'macOS', sub: 'leadjet-macos', href: `${REL}/leadjet-macos` },
-  { key: 'linux', label: 'Linux', sub: 'leadjet-linux', href: `${REL}/leadjet-linux` },
+  { key: 'win', label: 'Windows', sub: 'leadjet-setup.exe', href: `${REL}/leadjet-setup.exe` },
+  { key: 'mac', label: 'macOS', sub: 'leadjet-macos.pkg', href: `${REL}/leadjet-macos.pkg` },
+  { key: 'linux', label: 'Linux', sub: 'leadjet-linux.deb', href: `${REL}/leadjet-linux.deb` },
 ];
 
 function detectOs(): string {
@@ -54,6 +54,9 @@ export default function InstallCli() {
       <div className="npm">
         <code>{NPM}</code>
         <button className="btn" onClick={copyNpm}>{copied ? t('install.copied') : t('install.copy')}</button>
+      </div>
+      <div className="dl-other">
+        Other: <a href={`${REL}/leadjet-linux.rpm`}>.rpm</a> · <a href="https://github.com/thmxsweb/leadjet/releases/latest" target="_blank" rel="noreferrer">all downloads</a>
       </div>
     </div>
   );
