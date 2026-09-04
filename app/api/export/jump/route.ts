@@ -75,7 +75,8 @@ export async function POST(req: Request) {
       const name = S(data, 'legal') || S(data, 'name');
       const cp = S(data, 'regCp') || cpOf(S(data, 'location'));
       const city = S(data, 'regCity');
-      const match = await resolveSiret(name, cp || undefined, city || undefined);
+      const street = S(data, 'regAddress') || S(data, 'location');
+      const match = await resolveSiret(name, cp || undefined, city || undefined, street || undefined);
       if (match) {
         data.siret = data.siret || match.siret;
         data.siren = data.siren || match.siren;
