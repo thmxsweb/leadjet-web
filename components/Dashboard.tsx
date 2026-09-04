@@ -140,8 +140,9 @@ export default function Dashboard({ email }: { email: string }) {
       if (d.resolved) parts.push(`${d.resolved} SIRET found`);
       if (d.already) parts.push(`${d.already} already clients`);
       if (d.skipped) parts.push(`${d.skipped} skipped (no SIRET/address)`);
-      flash(`Join-Jump: ${parts.join(', ')}.`);
-      setSel(new Set());
+      if (d.failed) parts.push(`${d.failed} failed`);
+      flash(`Join-Jump: ${parts.join(', ')}.${d.firstError ? ` First error: ${d.firstError}` : ''}`);
+      if (d.created) setSel(new Set());
     } else flash(d.error ?? 'Export failed.');
   }
 

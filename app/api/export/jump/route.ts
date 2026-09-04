@@ -60,6 +60,18 @@ export async function POST(req: Request) {
 
   const jump = new JumpClient({ credentials: { email: u.jumpEmail, password: u.jumpPassword } });
 
+  // Validate the Join-Jump login up front so a bad password gives a clear error
+  // instead of every lead silently failing.
+  try {
+    await jump.missions.searchClients({ query: '__leadjet_ping__' });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'login failed';
+    return NextResponse.json(
+      { error: `Join-Jump login failed — check your email/password in Settings. (${msg})` },
+      { status: 400 },
+    );
+  }
+
   let created = 0;
   let already = 0;
   let resolved = 0;
@@ -114,6 +126,8 @@ export async function POST(req: Request) {
     already,
     resolved,
     skipped: skipped.length,
+    failed: errors.length,
+    firstError: errors[0] ?? null,
     errors: errors.slice(0, 5),
     skippedDetail: skipped.slice(0, 8),
   });
