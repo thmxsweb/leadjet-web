@@ -152,7 +152,7 @@ tbody tr:hover td{background:var(--elev)}
 .dd-plan{font-size:11px;color:var(--mut)}
 
 /* account + settings pages */
-.panel{max-width:560px;margin:11vh auto 0}
+.panel{max-width:560px;margin:10.5vh auto 0}
 .settings-wrap{max-width:640px;margin:20px auto 0;display:flex;flex-direction:column;gap:14px}
 .ph1{font-size:22px;margin:0 0 14px;letter-spacing:-.02em}
 .set-sec h3{margin:0 0 4px;font-size:15px}
