@@ -128,6 +128,7 @@ export default function Dashboard({ email }: { email: string }) {
     const d = await res.json().catch(() => ({}));
     if (res.ok) {
       const parts = [`${d.created ?? 0} added`];
+      if (d.resolved) parts.push(`${d.resolved} SIRET found`);
       if (d.already) parts.push(`${d.already} already clients`);
       if (d.skipped) parts.push(`${d.skipped} skipped (no SIRET/address)`);
       flash(`Join-Jump: ${parts.join(', ')}.`);

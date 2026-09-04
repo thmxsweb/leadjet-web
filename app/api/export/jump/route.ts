@@ -4,6 +4,7 @@ import { auth } from '@/auth';
 import { dbConnect } from '@/lib/db';
 import { Lead } from '@/lib/models/Lead';
 import { User } from '@/lib/models/User';
+import { cpOf, resolveSiret } from '@/lib/registry';
 
 export const maxDuration = 60;
 
@@ -60,11 +61,34 @@ export async function POST(req: Request) {
 
   let created = 0;
   let already = 0;
+  let resolved = 0;
   const skipped: string[] = [];
   const errors: string[] = [];
 
   for (const doc of docs) {
     const data = (doc.data ?? {}) as Record<string, unknown>;
+
+    // If the SIRET or address is missing, resolve it live from the French registry.
+    const hasSiret = /^\d{14}$/.test(S(data, 'siret').replace(/\s/g, ''));
+    const hasAddr = Boolean((S(data, 'regAddress') || S(data, 'location')) && S(data, 'regCity') && (S(data, 'regCp') || cpOf(S(data, 'location'))));
+    if (!hasSiret || !hasAddr) {
+      const name = S(data, 'legal') || S(data, 'name');
+      const cp = S(data, 'regCp') || cpOf(S(data, 'location'));
+      const city = S(data, 'regCity');
+      const match = await resolveSiret(name, cp || undefined, city || undefined);
+      if (match) {
+        data.siret = data.siret || match.siret;
+        data.siren = data.siren || match.siren;
+        data.vat = data.vat || match.vat;
+        data.regAddress = S(data, 'regAddress') || match.street;
+        data.regCity = S(data, 'regCity') || match.city;
+        data.regCp = S(data, 'regCp') || match.cp;
+        resolved += 1;
+        // Persist so the dashboard shows it and future exports skip the lookup.
+        await Lead.updateOne({ userId: session.user.id, key: doc.key }, { $set: { data } });
+      }
+    }
+
     const m = toClientBody(data);
     if (m.skip || !m.body) { skipped.push(`${m.label}: ${m.skip}`); continue; }
     try {
@@ -86,6 +110,7 @@ export async function POST(req: Request) {
     ok: true,
     created,
     already,
+    resolved,
     skipped: skipped.length,
     errors: errors.slice(0, 5),
     skippedDetail: skipped.slice(0, 8),
