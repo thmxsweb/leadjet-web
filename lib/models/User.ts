@@ -11,6 +11,9 @@ const UserSchema = new Schema(
     jumpEmail: { type: String },
     jumpPassword: { type: String },
     cvcrushConnected: { type: Boolean, default: false },
+    aiProvider: { type: String }, // 'gemini' | 'claude'
+    geminiKey: { type: String },
+    anthropicKey: { type: String },
     passwordHash: { type: String, required: true },
     emailVerified: { type: Date, default: null },
   },

@@ -12,11 +12,18 @@ export default function Settings({ email }: { email: string }) {
   const [cvConnected, setCvConnected] = useState(false);
   const [showJumpForm, setShowJumpForm] = useState(false);
   const [msg, setMsg] = useState('');
+  const [aiProvider, setAiProvider] = useState<'gemini' | 'claude'>('gemini');
+  const [aiKey, setAiKey] = useState('');
+  const [geminiOn, setGeminiOn] = useState(false);
+  const [claudeOn, setClaudeOn] = useState(false);
 
   const loadInteg = () => fetch('/api/integrations').then((r) => r.json()).then((d) => {
     setJumpConnected(Boolean(d.jump?.connected));
     setJumpEmail(d.jump?.email ?? '');
     setCvConnected(Boolean(d.cvcrush?.connected));
+    setGeminiOn(Boolean(d.ai?.gemini));
+    setClaudeOn(Boolean(d.ai?.claude));
+    if (d.ai?.provider === 'gemini' || d.ai?.provider === 'claude') setAiProvider(d.ai.provider);
   }).catch(() => {});
   useEffect(() => { loadInteg(); }, []);
   function flash(m: string) { setMsg(m); setTimeout(() => setMsg(''), 2500); }
@@ -34,6 +41,16 @@ export default function Settings({ email }: { email: string }) {
     await fetch('/api/integrations', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ provider: 'cvcrush', disconnect: cvConnected }) });
     if (!cvConnected) window.open('https://cvcrush.co/connect?app=leadjet', '_blank');
     flash(cvConnected ? 'cvcrush disconnected.' : 'cvcrush connected.'); loadInteg();
+  }
+  async function saveAiKey() {
+    if (!aiKey.trim()) return;
+    const r = await fetch('/api/integrations', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ provider: 'ai', aiProvider, key: aiKey.trim() }) });
+    const d = await r.json().catch(() => ({}));
+    if (r.ok) { setAiKey(''); flash(`${aiProvider === 'claude' ? 'Claude' : 'Gemini'} key saved.`); loadInteg(); } else flash(d.error ?? 'Error');
+  }
+  async function removeAiKey(which: 'gemini' | 'claude') {
+    await fetch('/api/integrations', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ provider: 'ai', aiProvider: which, disconnect: true }) });
+    flash(`${which === 'claude' ? 'Claude' : 'Gemini'} key removed.`); loadInteg();
   }
   async function unlink() {
     if (!confirm(t('unlink.confirm'))) return;
@@ -83,6 +100,29 @@ export default function Settings({ email }: { email: string }) {
               <div className="srow">
                 <div className="srow-l"><b>cvcrush {badge(cvConnected)}</b><span>Push leads to cvcrush.co.</span></div>
                 <div className="srow-r"><button className={cvConnected ? 'btn' : 'btn red'} onClick={toggleCv}>{cvConnected ? 'Disconnect' : 'Connect'}</button></div>
+              </div>
+            </div>
+          </section>
+
+          <section className="sgroup">
+            <div className="sgroup-hd"><h3>AI analysis</h3><p>Analyze leads with AI — fit, pitch angle, budget and a ready-to-send message.</p></div>
+            <div className="card">
+              <div className="srow">
+                <div className="srow-l"><b>Provider</b><span>Gemini has a free tier · Claude uses your Anthropic API key (paid).</span></div>
+                <div className="chiprow">
+                  <button className={`chipbtn ${aiProvider === 'gemini' ? 'on' : ''}`} onClick={() => setAiProvider('gemini')}>Gemini {geminiOn ? '✓' : ''}</button>
+                  <button className={`chipbtn ${aiProvider === 'claude' ? 'on' : ''}`} onClick={() => setAiProvider('claude')}>Claude {claudeOn ? '✓' : ''}</button>
+                </div>
+              </div>
+              <div className="srow inline-form">
+                <input type="password" placeholder={aiProvider === 'claude' ? 'Anthropic API key (sk-ant-…)' : 'Google AI Studio API key'} value={aiKey} onChange={(e) => setAiKey(e.target.value)} />
+                <button className="btn red" onClick={saveAiKey}>Save key</button>
+                {(aiProvider === 'gemini' ? geminiOn : claudeOn) ? <button className="btn" onClick={() => removeAiKey(aiProvider)}>Remove</button> : null}
+              </div>
+              <div className="srow"><div className="srow-l"><span>{aiProvider === 'claude'
+                ? 'Get a key at console.anthropic.com. Note: a Claude Pro/Max subscription cannot be used here — third-party apps need an API key.'
+                : 'Get a free key at aistudio.google.com/apikey.'}</span></div>
+                <a className="btn" href={aiProvider === 'claude' ? 'https://console.anthropic.com/settings/keys' : 'https://aistudio.google.com/apikey'} target="_blank" rel="noreferrer">Get a key</a>
               </div>
             </div>
           </section>

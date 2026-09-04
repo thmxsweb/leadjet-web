@@ -11,6 +11,11 @@ export async function GET() {
   return NextResponse.json({
     jump: { email: u?.jumpEmail ?? '', connected: Boolean(u?.jumpEmail && u?.jumpPassword) },
     cvcrush: { connected: Boolean(u?.cvcrushConnected) },
+    ai: {
+      provider: u?.aiProvider ?? '',
+      gemini: Boolean(u?.geminiKey),
+      claude: Boolean(u?.anthropicKey),
+    },
   });
 }
 
@@ -19,8 +24,24 @@ export async function POST(req: Request) {
   if (!session?.user?.id) return NextResponse.json({ error: 'Not signed in.' }, { status: 401 });
   const body = (await req.json().catch(() => ({}))) as {
     provider?: string; email?: string; password?: string; disconnect?: boolean;
+    aiProvider?: string; key?: string;
   };
   await dbConnect();
+
+  if (body.provider === 'ai') {
+    const which = body.aiProvider === 'claude' ? 'claude' : 'gemini';
+    const field = which === 'claude' ? 'anthropicKey' : 'geminiKey';
+    if (body.disconnect) {
+      await User.updateOne({ _id: session.user.id }, { $unset: { [field]: '' } });
+      return NextResponse.json({ ok: true });
+    }
+    if (!body.key) return NextResponse.json({ error: 'API key required.' }, { status: 400 });
+    await User.updateOne(
+      { _id: session.user.id },
+      { $set: { [field]: body.key.trim(), aiProvider: which } },
+    );
+    return NextResponse.json({ ok: true });
+  }
 
   if (body.provider === 'jump') {
     if (body.disconnect) {
