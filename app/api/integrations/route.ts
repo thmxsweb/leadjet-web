@@ -1,3 +1,4 @@
+import { JumpClient } from '@thmxsweb/jj-sdk';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { dbConnect } from '@/lib/db';
@@ -49,7 +50,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
     if (!body.email || !body.password) return NextResponse.json({ error: 'Email and password required.' }, { status: 400 });
-    await User.updateOne({ _id: session.user.id }, { $set: { jumpEmail: body.email, jumpPassword: body.password } });
+    // Verify the credentials actually log in before saving, so "Connected" means it works.
+    try {
+      const jump = new JumpClient({ credentials: { email: body.email.trim(), password: body.password } });
+      await jump.missions.searchClients({ query: '__leadjet_ping__' });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'login failed';
+      return NextResponse.json({ error: `Invalid Join-Jump credentials (${msg}).` }, { status: 400 });
+    }
+    await User.updateOne({ _id: session.user.id }, { $set: { jumpEmail: body.email.trim(), jumpPassword: body.password } });
     return NextResponse.json({ ok: true });
   }
   if (body.provider === 'cvcrush') {
