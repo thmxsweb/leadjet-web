@@ -126,8 +126,13 @@ export default function Dashboard({ email }: { email: string }) {
     flash(`Exporting ${keys.length} to Join-Jump…`);
     const res = await fetch('/api/export/jump', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ keys }) });
     const d = await res.json().catch(() => ({}));
-    if (res.ok) { flash(`Join-Jump: ${d.created ?? 0} added, ${d.skipped ?? 0} skipped.`); setSel(new Set()); }
-    else flash(d.error ?? 'Export failed.');
+    if (res.ok) {
+      const parts = [`${d.created ?? 0} added`];
+      if (d.already) parts.push(`${d.already} already clients`);
+      if (d.skipped) parts.push(`${d.skipped} skipped (no SIRET/address)`);
+      flash(`Join-Jump: ${parts.join(', ')}.`);
+      setSel(new Set());
+    } else flash(d.error ?? 'Export failed.');
   }
 
   function exportCsv() {
