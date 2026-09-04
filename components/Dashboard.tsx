@@ -24,6 +24,7 @@ export default function Dashboard({ email }: { email: string }) {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState('');
   const [pr, setPr] = useState('');
+  const [contact, setContact] = useState('');
   const [sortKey, setSortKey] = useState('score');
   const [sortDir, setSortDir] = useState(-1);
   const [sel, setSel] = useState<Set<string>>(new Set());
@@ -64,6 +65,14 @@ export default function Dashboard({ email }: { email: string }) {
     const ql = q.toLowerCase().trim();
     const out = withBudget.filter(({ l }) => {
       if (pr && l.priority !== pr) return false;
+      if (contact) {
+        const hasP = Boolean(l.phone);
+        const hasE = Boolean(l.email);
+        if (contact === 'phone' && !hasP) return false;
+        if (contact === 'email' && !hasE) return false;
+        if (contact === 'both' && !(hasP && hasE)) return false;
+        if (contact === 'either' && !(hasP || hasE)) return false;
+      }
       if (ql) {
         const h = `${l.name} ${l.activity} ${l.owner} ${l.location} ${l.opportunity}`.toLowerCase();
         if (!h.includes(ql)) return false;
@@ -77,7 +86,7 @@ export default function Dashboard({ email }: { email: string }) {
       return (x as number) < (y as number) ? -sortDir : (x as number) > (y as number) ? sortDir : 0;
     });
     return out;
-  }, [withBudget, q, pr, sortKey, sortDir]);
+  }, [withBudget, q, pr, contact, sortKey, sortDir]);
 
   const sortBy = (k: string) => {
     if (sortKey === k) setSortDir(-sortDir);
@@ -203,6 +212,13 @@ export default function Dashboard({ email }: { email: string }) {
                 <option value="Chaud">{t('kpi.hot')}</option>
                 <option value="Tiède">Warm</option>
                 <option value="Froid">Cold</option>
+              </select>
+              <select value={contact} onChange={(e) => setContact(e.target.value)}>
+                <option value="">Any contact</option>
+                <option value="either">Phone or email</option>
+                <option value="phone">Has phone</option>
+                <option value="email">Has email</option>
+                <option value="both">Phone &amp; email</option>
               </select>
               <div className="spacer" />
               {sel.size > 0 ? <span className="count">{sel.size} selected</span> : <span className="count">{rows.length} / {leads.length}</span>}
