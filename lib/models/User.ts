@@ -8,6 +8,9 @@ const UserSchema = new Schema(
     dob: { type: String },
     phone: { type: String },
     image: { type: String }, // data URL (small, resized client-side)
+    jumpEmail: { type: String },
+    jumpPassword: { type: String },
+    cvcrushConnected: { type: Boolean, default: false },
     passwordHash: { type: String, required: true },
     emailVerified: { type: Date, default: null },
   },

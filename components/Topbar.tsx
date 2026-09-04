@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 import { LANGS, useApp } from '@/lib/app-context';
@@ -12,11 +13,11 @@ function SunMoon({ theme }: { theme: string }) {
   );
 }
 
-export default function Topbar({ email, onRefresh }: { email: string; onRefresh: () => void }) {
+export default function Topbar({ email, onRefresh }: { email: string; onRefresh?: () => void }) {
+  const router = useRouter();
   const { theme, toggleTheme, lang, setLang, t } = useApp();
   const [langOpen, setLangOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [modal, setModal] = useState<null | 'profile' | 'settings'>(null);
   const [msg, setMsg] = useState('');
 
   async function unlink() {
@@ -25,23 +26,20 @@ export default function Topbar({ email, onRefresh }: { email: string; onRefresh:
     const d = await r.json().catch(() => ({}));
     setMsg(r.ok ? `${t('unlink.done')} (${d.removed ?? 0})` : d.error ?? 'Error');
     setMenuOpen(false);
-    setModal(null);
     setTimeout(() => setMsg(''), 2500);
   }
 
   return (
     <header className="topbar">
-      <div className="wm" style={{ fontSize: 18 }}>lead<span>jet</span></div>
+      <div className="wm" style={{ fontSize: 18, cursor: 'pointer' }} onClick={() => router.push('/')}>lead<span>jet</span></div>
 
       <div className="spacer" />
       {msg ? <span className="who ok">{msg}</span> : null}
 
-      <button className="icon-btn" onClick={toggleTheme} title="Theme">
-        <SunMoon theme={theme} />
-      </button>
+      <button className="icon-btn" onClick={toggleTheme} title="Theme"><SunMoon theme={theme} /></button>
 
       <div className="menu-wrap">
-        <button className="icon-btn wide" onClick={() => setLangOpen((v) => !v)} title="Language">
+        <button className="icon-btn" onClick={() => setLangOpen((v) => !v)} title="Language">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" /></svg>
           <span>{lang.toUpperCase()}</span>
         </button>
@@ -71,35 +69,16 @@ export default function Topbar({ email, onRefresh }: { email: string; onRefresh:
                 <div className="dd-id"><div className="dd-email">{email}</div><div className="dd-plan">Free plan</div></div>
               </div>
               <div className="sep" />
-              <button onClick={() => { setModal('profile'); setMenuOpen(false); }}>{t('menu.profile')}</button>
-              <button onClick={() => { onRefresh(); setMenuOpen(false); }}>{t('menu.refresh')}</button>
+              <button onClick={() => { setMenuOpen(false); router.push('/account'); }}>{t('menu.profile')}</button>
+              {onRefresh ? <button onClick={() => { onRefresh(); setMenuOpen(false); }}>{t('menu.refresh')}</button> : null}
               <button onClick={unlink}>{t('menu.unlink')}</button>
-              <button onClick={() => { setModal('settings'); setMenuOpen(false); }}>{t('menu.settings')}</button>
+              <button onClick={() => { setMenuOpen(false); router.push('/settings'); }}>{t('menu.settings')}</button>
               <div className="sep" />
               <button className="danger" onClick={() => signOut({ callbackUrl: '/login' })}>{t('menu.signout')}</button>
             </div>
           </>
         ) : null}
       </div>
-
-      {modal ? (
-        <div className="scrim on" onClick={(e) => { if (e.target === e.currentTarget) setModal(null); }}>
-          <div className="modal">
-            <h3>{modal === 'profile' ? t('menu.profile') : t('menu.settings')}</h3>
-            <div className="kv"><span>Email</span><b>{email}</b></div>
-            <div className="kv"><span>Theme</span>
-              <button className="chipbtn" onClick={toggleTheme}>{theme === 'dark' ? 'Dark' : 'Light'}</button>
-            </div>
-            <div className="kv"><span>Language</span>
-              <div className="chiprow">{LANGS.map((l) => <button key={l.code} className={`chipbtn ${l.code === lang ? 'on' : ''}`} onClick={() => setLang(l.code)}>{l.code.toUpperCase()}</button>)}</div>
-            </div>
-            <div className="modal-foot">
-              <button className="btn" onClick={unlink}>{t('menu.unlink')}</button>
-              <button className="btn red" onClick={() => setModal(null)}>OK</button>
-            </div>
-          </div>
-        </div>
-      ) : null}
     </header>
   );
 }
