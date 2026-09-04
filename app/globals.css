@@ -41,6 +41,7 @@ input:focus,select:focus{outline:none;border-color:var(--red-bd);box-shadow:0 0 
 .btn.red{background:var(--red);border-color:var(--red);color:#fff}.btn.red:hover{background:var(--red-h)}
 .btn.red-o{background:transparent;border-color:var(--red-bd);color:var(--red-h)}.btn.red-o:hover{background:var(--red-dim)}
 .btn:disabled{opacity:.5}
+.btn.danger{color:var(--red-h);border-color:var(--red-bd)}.btn.danger:hover{background:var(--red-dim);border-color:var(--red)}
 
 .searchbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .searchbar .term{flex:1 1 170px;min-width:150px}

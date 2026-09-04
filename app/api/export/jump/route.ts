@@ -4,7 +4,7 @@ import { auth } from '@/auth';
 import { dbConnect } from '@/lib/db';
 import { Lead } from '@/lib/models/Lead';
 import { User } from '@/lib/models/User';
-import { cpOf, resolveSiret } from '@/lib/registry';
+import { cpOf, frVat, resolveSiret } from '@/lib/registry';
 
 export const maxDuration = 60;
 
@@ -22,7 +22,8 @@ function toClientBody(d: Record<string, unknown>): { body?: Record<string, unkno
   const street = S(d, 'regAddress') || S(d, 'location');
   const city = S(d, 'regCity');
   const zip = S(d, 'regCp') || (S(d, 'location').match(/\b(\d{5})\b/)?.[1] ?? '');
-  const vat = S(d, 'vat');
+  // VAT is derived from the SIREN (first 9 digits of the SIRET) — always correct by construction.
+  const vat = S(d, 'vat') || frVat(siret.slice(0, 9));
   if (!label) return { skip: 'no name', label: '(unnamed)' };
   if (!/^\d{14}$/.test(siret)) return { skip: 'no SIRET', label };
   if (!street || !city || !/^\d{5}$/.test(zip)) return { skip: 'incomplete address', label };

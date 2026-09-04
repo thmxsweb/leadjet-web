@@ -28,7 +28,8 @@ function nameScore(query: string, cand: string): number {
   return q.filter((t) => c.has(t)).length / q.length;
 }
 
-function frVat(siren: string): string {
+/** French intra-community VAT, derived deterministically from the SIREN. */
+export function frVat(siren: string): string {
   if (!/^\d{9}$/.test(siren)) return '';
   const k = (12 + 3 * (Number(siren) % 97)) % 97;
   return `FR${String(k).padStart(2, '0')}${siren}`;

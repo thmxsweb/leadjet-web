@@ -136,6 +136,22 @@ export default function Dashboard({ email }: { email: string }) {
     } else flash(d.error ?? 'Export failed.');
   }
 
+  async function deleteLeads() {
+    const keys = [...sel];
+    const n = keys.length || leads.length;
+    if (!n) return;
+    const what = keys.length ? `${keys.length} selected lead(s)` : `ALL ${leads.length} leads`;
+    if (!confirm(`Delete ${what}? This cannot be undone.`)) return;
+    const res = await fetch('/api/leads', {
+      method: 'DELETE',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(keys.length ? { keys } : {}),
+    });
+    const d = await res.json().catch(() => ({}));
+    if (res.ok) { flash(`Deleted ${d.deleted ?? 0} lead(s).`); setSel(new Set()); setOpen(null); await load(); }
+    else flash(d.error ?? 'Delete failed.');
+  }
+
   function exportCsv() {
     if (!rows.length) return;
     const cols = [...COLS, 'budgetLow', 'budgetHigh'];
@@ -192,6 +208,7 @@ export default function Dashboard({ email }: { email: string }) {
               {sel.size > 0 ? <span className="count">{sel.size} selected</span> : <span className="count">{rows.length} / {leads.length}</span>}
               <button className="btn" onClick={exportJump} disabled={!sel.size} title={jumpOn ? '' : 'Connect Join-Jump in Settings'}>Export to Join-Jump</button>
               <button className="btn" onClick={exportCsv}>{t('exportCsv')}</button>
+              <button className="btn danger" onClick={deleteLeads}>{sel.size ? `Delete (${sel.size})` : 'Delete all'}</button>
             </div>
 
             <div className="card tablecard"><div className="twrap">

@@ -60,3 +60,17 @@ export async function GET() {
   const docs = await Lead.find({ userId: session.user.id }).sort({ score: -1 }).limit(2000).lean();
   return NextResponse.json({ leads: docs.map((d) => d.data) });
 }
+
+/** Dashboard deletes leads — all of them, or a given set of keys. */
+export async function DELETE(req: Request) {
+  const session = await auth();
+  if (!session?.user?.id) return NextResponse.json({ error: 'Not signed in.' }, { status: 401 });
+  const { keys } = (await req.json().catch(() => ({}))) as { keys?: string[] };
+  await dbConnect();
+  const filter =
+    Array.isArray(keys) && keys.length
+      ? { userId: session.user.id, key: { $in: keys } }
+      : { userId: session.user.id };
+  const res = await Lead.deleteMany(filter);
+  return NextResponse.json({ ok: true, deleted: res.deletedCount ?? 0 });
+}
