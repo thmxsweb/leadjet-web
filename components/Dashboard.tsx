@@ -7,7 +7,7 @@ import InstallCli from './InstallCli';
 import Topbar from './Topbar';
 
 const tier = (s: number) => (s >= 70 ? 'hot' : s >= 45 ? 'warm' : 'cold');
-const COLS = ['name', 'legal', 'activity', 'owner', 'role', 'phone', 'email', 'score', 'priority', 'opportunity', 'domain', 'location', 'website', 'siren'];
+const COLS = ['name', 'legal', 'activity', 'owner', 'role', 'phone', 'email', 'score', 'priority', 'opportunity', 'domain', 'location', 'website', 'siren', 'siret', 'vat'];
 
 export default function Dashboard({ email }: { email: string }) {
   const { t } = useApp();
@@ -126,6 +126,8 @@ export default function Dashboard({ email }: { email: string }) {
                   <th onClick={() => sortBy('email')}>{t('tbl.email')}</th>
                   <th onClick={() => sortBy('domain')}>{t('tbl.domain')}</th>
                   <th onClick={() => sortBy('opportunity')}>{t('tbl.opportunity')}</th>
+                  <th onClick={() => sortBy('siret')}>SIRET</th>
+                  <th onClick={() => sortBy('vat')}>VAT</th>
                   <th onClick={() => sortBy('location')}>{t('tbl.location')}</th>
                 </tr></thead>
                 <tbody>
@@ -139,6 +141,8 @@ export default function Dashboard({ email }: { email: string }) {
                       <td>{r.email ? <a href={`mailto:${r.email}`}>{r.email}</a> : <span className="mut">—</span>}</td>
                       <td>{r.domainType === 'existing' ? <a href={`https://${r.domain}`} target="_blank" rel="noreferrer">{r.domain}</a> : <span className="prop">{r.domain}</span>}</td>
                       <td><span className="pill">{r.opportunity}</span></td>
+                      <td className="mut mono">{(r.siret as string) || '—'}</td>
+                      <td className="mut mono">{(r.vat as string) || '—'}</td>
                       <td className="mut">{r.location}</td>
                     </tr>
                   ))}
