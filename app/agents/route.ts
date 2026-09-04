@@ -1,59 +1,46 @@
-const MD = `# leadjet — guide for AI agents
+const MD = `# leadjet — connect via MCP
 
-leadjet finds local business leads, enriches them (owner, website audit, 0-100
-score, domain suggestion) and lets you turn them into clients. It is a local
-**CLI engine** paired with a web account. Data is found on the user's machine and
-pushed to their account.
+You are an AI agent. leadjet exposes a local **MCP server** so you can find,
+enrich, score and push local business leads to the user's leadjet-web account.
 
-## Install
-- npm: \`npm i -g @thmxsweb/leadjet\`
-- or standalone binaries: https://github.com/thmxsweb/leadjet/releases/latest
-  (\`leadjet-win.exe\`, \`leadjet-macos\`, \`leadjet-linux\`)
-
-## Link to an account (once, valid 7 days)
+## 1. Install the CLI (on the user's machine)
 \`\`\`
-leadjet link
+npm i -g @thmxsweb/leadjet
 \`\`\`
-Opens the browser to approve the device; stores a 7-day token.
+Or download a binary/installer: https://github.com/thmxsweb/leadjet/releases/latest
 
-## Core command: find + enrich + score + (optionally) push
+## 2. Register the MCP server in your client
+Add this to your MCP client config (Claude Desktop, Cursor, etc.):
+\`\`\`json
+{
+  "mcpServers": {
+    "leadjet": { "command": "leadjet", "args": ["mcp"] }
+  }
+}
 \`\`\`
-leadjet leads "<niche>" --city <city> --country <country> [--region <region>] \\
-  [--source osm|places] [--limit <n>] [--no-owner] [--no-audit] \\
-  [--out file.csv | --append file.ndjson | --push] [--format json|csv|ndjson]
-\`\`\`
-Examples:
-\`\`\`
-leadjet leads "restaurants" --city Lyon --country France --push
-leadjet leads "plumbers" --city Paris --region "Île-de-France" -o leads.csv
-\`\`\`
+The server speaks MCP over stdio (JSON-RPC 2.0). It runs locally; the connection
+is secured by the CLI's account link (below) — no tool returns data unless the
+CLI is linked to a leadjet-web account.
 
-- \`--source osm\` (default, free, OpenStreetMap) or \`places\` (Google Places, needs a key).
-- \`--push\` sends the leads to the linked web account (viewable on the dashboard).
+## 3. Make sure the CLI is linked (required)
+Every data tool is gated on a valid account link (7 days).
+- Call the **account_status** tool first.
+- If it reports "not linked" (or a tool returns that), ask the user to run:
+  \`\`\`
+  leadjet link
+  \`\`\`
+  and approve it at https://leadjet-web.vercel.app. If the link expired, ask them
+  to run \`leadjet link\` again to reconnect.
 
-## Other commands
-- \`leadjet find "<query>"\` — raw business export (no enrichment).
-- \`leadjet contacts --in leads.ndjson -o contacts.csv\` — scrape sites for emails, socials, owner.
-- \`leadjet serve\` — local web dashboard + API.
-- \`leadjet config set places-key <KEY>\` — save a Google Places key.
-- \`leadjet config set web-url <url>\` — point the CLI at a web account.
+## Tools (summary)
+- **account_status** — is the CLI linked, and to which account.
+- **search_leads** { niche, city, country?, region?, source?, limit?, push? } —
+  find + enrich (owner, website audit) + score, and push to the account.
 
-## What each lead contains
-name, legal (company name), activity, owner + role (French business registry),
-phone, email, website, score (0-100), priority (Chaud/Tiède/Froid = hot/warm/cold),
-opportunity (Création site / Site mort - refonte / Refonte … / Site correct),
-domain (existing site to remake, or a proposed domain), location, siren, source.
-
-## Scoring
-score = web need (no site 60 · dead site 55 · DIY builder 35 · modern 10)
-      + reachability (phone +12 · email +8)
-      + value (owner known +8 · established +6 · has staff +6). Cap 100.
-Hot ≥ 70, Warm 45-69, Cold < 45.
-
-## Typical agent workflow
-1. \`leadjet link\` (if not linked).
-2. \`leadjet leads "<niche>" --city <city> --country <country> --push\`.
-3. Read results (or the account dashboard) and act on the highest-scoring, reachable leads.
+More:
+- Tools schema:  https://leadjet-web.vercel.app/agents/tools
+- CLI commands:   https://leadjet-web.vercel.app/agents/commands
+- Usage guide:    https://leadjet-web.vercel.app/agents/usage
 `;
 
 export function GET() {
