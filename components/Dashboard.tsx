@@ -3,6 +3,7 @@
 import { signOut } from 'next-auth/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Lead } from '@/lib/api';
+import InstallCli from './InstallCli';
 
 const tier = (s: number) => (s >= 70 ? 'hot' : s >= 45 ? 'warm' : 'cold');
 const COLS = ['name', 'legal', 'activity', 'owner', 'role', 'phone', 'email', 'score', 'priority', 'opportunity', 'domain', 'location', 'website', 'siren'];
@@ -84,26 +85,25 @@ export default function Dashboard({ email }: { email: string }) {
       </header>
 
       <main className="content">
-        <div className="stats">
-          <div className="kpi"><b>{kpi.total}</b><span>leads</span></div>
-          <div className="kpi red"><b>{kpi.hot}</b><span>hot</span></div>
-          <div className="kpi"><b>{kpi.tel}</b><span>phone</span></div>
-          <div className="kpi"><b>{kpi.mail}</b><span>email</span></div>
-        </div>
-
         {leads.length === 0 && !loading ? (
           <div className="onboard card">
-            <h2>No leads yet</h2>
-            <p>Find leads with the CLI on your machine, then they appear here.</p>
-            <ol>
-              <li><code>npm i -g @thmxsweb/leadjet</code></li>
-              <li><code>leadjet link</code> <span className="mut">(links this account for 7 days)</span></li>
-              <li><code>leadjet leads &quot;restaurants&quot; --city Lyon --push</code></li>
-            </ol>
+            <h2>Install the leadjet CLI</h2>
+            <p>Pick your installer, then link this account. Your leads appear here after you push.</p>
+            <InstallCli />
+            <div className="steps">
+              <div className="step"><span className="n">2</span><div><b>Link this account</b> <span className="mut">(valid 7 days)</span><div><code>leadjet link</code></div></div></div>
+              <div className="step"><span className="n">3</span><div><b>Find &amp; push leads</b><div><code>leadjet leads &quot;restaurants&quot; --city Lyon --push</code></div></div></div>
+            </div>
             <button className="btn red" onClick={() => load()}>I have pushed leads — Refresh</button>
           </div>
         ) : (
           <>
+            <div className="stats">
+              <div className="kpi"><b>{kpi.total}</b><span>leads</span></div>
+              <div className="kpi red"><b>{kpi.hot}</b><span>hot</span></div>
+              <div className="kpi"><b>{kpi.tel}</b><span>phone</span></div>
+              <div className="kpi"><b>{kpi.mail}</b><span>email</span></div>
+            </div>
             <div className="toolbar">
               <input placeholder="Filter…" value={q} onChange={(e) => setQ(e.target.value)} />
               <select value={pr} onChange={(e) => setPr(e.target.value)}>
