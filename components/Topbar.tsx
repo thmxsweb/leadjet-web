@@ -33,6 +33,9 @@ export default function Topbar({ email, onRefresh }: { email: string; onRefresh:
     <header className="topbar">
       <div className="wm" style={{ fontSize: 18 }}>lead<span>jet</span></div>
 
+      <div className="spacer" />
+      {msg ? <span className="who ok">{msg}</span> : null}
+
       <button className="icon-btn" onClick={toggleTheme} title="Theme">
         <SunMoon theme={theme} />
       </button>
@@ -45,7 +48,7 @@ export default function Topbar({ email, onRefresh }: { email: string; onRefresh:
         {langOpen ? (
           <>
             <div className="backdrop" onClick={() => setLangOpen(false)} />
-            <div className="dropdown left">
+            <div className="dropdown right">
               {LANGS.map((l) => (
                 <button key={l.code} className={l.code === lang ? 'on' : ''} onClick={() => { setLang(l.code); setLangOpen(false); }}>{l.label}</button>
               ))}
@@ -53,9 +56,6 @@ export default function Topbar({ email, onRefresh }: { email: string; onRefresh:
           </>
         ) : null}
       </div>
-
-      <div className="spacer" />
-      {msg ? <span className="who ok">{msg}</span> : null}
 
       <div className="menu-wrap">
         <button className="user-btn" onClick={() => setMenuOpen((v) => !v)}>

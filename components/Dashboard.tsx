@@ -17,6 +17,12 @@ export default function Dashboard({ email }: { email: string }) {
   const [pr, setPr] = useState('');
   const [sortKey, setSortKey] = useState('score');
   const [sortDir, setSortDir] = useState(-1);
+  const [boxTop, setBoxTop] = useState(8); // dev adjuster: install box top offset (vh)
+
+  useEffect(() => {
+    const v = Number(localStorage.getItem('lj_boxtop'));
+    if (Number.isFinite(v) && v > 0) setBoxTop(v);
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -82,7 +88,7 @@ export default function Dashboard({ email }: { email: string }) {
 
       <main className="content">
         {leads.length === 0 && !loading ? (
-          <div className="onboard card">
+          <div className="onboard card" style={{ marginTop: `${boxTop}vh` }}>
             <h2>{t('install.title')}</h2>
             <p>{t('install.sub')}</p>
             <InstallCli />
@@ -92,7 +98,18 @@ export default function Dashboard({ email }: { email: string }) {
             </div>
             <button className="btn red" onClick={() => load()}>{t('empty.refresh')}</button>
           </div>
-        ) : (
+        ) : null}
+
+        {leads.length === 0 && !loading ? (
+          <div className="devtool">
+            <div>install box top: <b>{boxTop}vh</b></div>
+            <input type="range" min={0} max={45} step={0.5} value={boxTop}
+              onChange={(e) => { const v = Number(e.target.value); setBoxTop(v); try { localStorage.setItem('lj_boxtop', String(v)); } catch {} }} />
+            <div className="hint">dev only — tell me the value you like</div>
+          </div>
+        ) : null}
+
+        {leads.length > 0 && (
           <>
             <div className="stats">
               <div className="kpi"><b>{kpi.total}</b><span>{t('kpi.leads')}</span></div>
