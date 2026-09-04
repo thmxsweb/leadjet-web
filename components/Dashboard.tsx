@@ -241,7 +241,8 @@ export default function Dashboard({ email }: { email: string }) {
                                   <div><span className="dt">VAT</span><span className="mono">{(l.vat as string) || '—'}</span></div>
                                   <div><span className="dt">Website</span>{l.website ? <a href={`https://${l.domain}`} target="_blank" rel="noreferrer">{l.domain}</a> : <span className="prop">{l.domain} (proposed)</span>}</div>
                                   <div><span className="dt">Site status</span>{l.siteStatus || '—'}</div>
-                                  {l.maps ? <div><span className="dt">Map</span><a href={l.maps as string} target="_blank" rel="noreferrer">OpenStreetMap</a></div> : null}
+                                  {l.siren ? <div><span className="dt">Registry</span><a href={`https://data.inpi.fr/entreprises/${l.siren}`} target="_blank" rel="noreferrer">INPI ↗</a></div> : null}
+                                  {l.maps ? <div><span className="dt">Map</span><a href={l.maps as string} target="_blank" rel="noreferrer">OpenStreetMap ↗</a></div> : null}
                                 </div>
 
                                 <div className="aibox">
