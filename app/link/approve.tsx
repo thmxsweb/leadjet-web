@@ -15,34 +15,42 @@ export default function Approve({ code, email }: { code: string; email: string }
     });
     const d = await r.json().catch(() => ({}));
     if (r.ok) setState('ok');
-    else {
-      setState('err');
-      setMsg(d.error ?? 'Approval failed.');
-    }
+    else { setState('err'); setMsg(d.error ?? 'Approval failed.'); }
   }
 
   if (state === 'ok') {
     return (
-      <div className="auth-card">
-        <div className="wm" style={{fontSize:20}}>lead<span>jet</span></div>
-        <h1>Device linked</h1>
-        <div className="note ok">Your CLI is now linked to <b>{email}</b> for 7 days. Return to your terminal.</div>
+      <div className="auth-card link-card">
+        <div className="wm" style={{ fontSize: 22 }}>lead<span>jet</span></div>
+        <div className="link-check">✓</div>
+        <h1>CLI linked</h1>
+        <p className="link-sub">Your CLI is now linked to <b>{email}</b> for 7 days. You can close this tab and go back to your terminal.</p>
       </div>
     );
   }
 
   return (
-    <div className="auth-card">
-      <div className="wm" style={{fontSize:20}}>lead<span>jet</span></div>
+    <div className="auth-card link-card">
+      <div className="wm" style={{ fontSize: 22 }}>lead<span>jet</span></div>
       <h1>Link your CLI</h1>
+      <p className="link-sub">A terminal is asking to link to your account and push leads for 7 days.</p>
+
+      <div className="code-box">
+        <span className="code-label">Device code</span>
+        <span className="code-val mono">{code || '—'}</span>
+      </div>
+
+      <div className="link-acct">
+        <span className="avatar">{(email[0] || 'u').toUpperCase()}</span>
+        <div><div className="link-acct-lbl">Linking to</div><div className="link-acct-email">{email}</div></div>
+      </div>
+
       {msg ? <div className="note bad">{msg}</div> : null}
-      <p style={{ color: 'var(--mut)', fontSize: 13 }}>
-        Authorize this terminal to push leads to <b>{email}</b>. Code:
-      </p>
-      <div className="mono" style={{ fontSize: 22, fontWeight: 800, letterSpacing: 2, textAlign: 'center', margin: '10px 0 16px' }}>{code || '—'}</div>
-      <button className="btn red" style={{ width: '100%', justifyContent: 'center' }} onClick={approve} disabled={state === 'busy' || !code}>
-        {state === 'busy' ? '...' : 'Approve for 7 days'}
+
+      <button className="btn red block" onClick={approve} disabled={state === 'busy' || !code}>
+        {state === 'busy' ? 'Linking…' : 'Approve for 7 days'}
       </button>
+      <p className="link-foot">Only approve if you just ran <code>leadjet link</code> yourself.</p>
     </div>
   );
 }

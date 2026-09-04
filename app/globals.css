@@ -92,6 +92,20 @@ tbody tr:hover td{background:var(--elev)}
 .note.ok{background:rgba(52,179,122,.14);color:var(--green)}
 .note.bad{background:var(--red-dim);color:var(--red-h)}
 
+/* link / approve page */
+.link-card{width:400px;text-align:center;align-items:center}
+.link-card h1{margin:12px 0 6px;font-size:20px}
+.link-sub{color:var(--mut);font-size:13px;line-height:1.55;margin:0 0 18px}
+.code-box{width:100%;background:var(--elev);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;display:flex;flex-direction:column;gap:4px}
+.code-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut)}
+.code-val{font-size:28px;font-weight:800;letter-spacing:6px;color:var(--ink)}
+.link-acct{display:flex;align-items:center;gap:10px;width:100%;background:var(--elev);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:16px;text-align:left}
+.link-acct-lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+.link-acct-email{font-size:13px;font-weight:600}
+.link-foot{color:var(--mut);font-size:11.5px;margin:14px 0 0}
+.link-foot code{background:var(--elev);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-family:ui-monospace,Menlo,Consolas,monospace}
+.link-check{width:52px;height:52px;border-radius:50%;background:rgba(52,179,122,.16);color:var(--green);display:grid;place-items:center;font-size:26px;font-weight:800;margin-top:6px}
+
 /* dashboard viewer shell */
 .shell{min-height:100vh;display:flex;flex-direction:column}
 .topbar{display:flex;align-items:center;gap:8px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:10}
