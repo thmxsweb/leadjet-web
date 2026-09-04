@@ -1,14 +1,16 @@
 'use client';
 
-import { signOut } from 'next-auth/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useApp } from '@/lib/app-context';
 import type { Lead } from '@/lib/api';
 import InstallCli from './InstallCli';
+import Topbar from './Topbar';
 
 const tier = (s: number) => (s >= 70 ? 'hot' : s >= 45 ? 'warm' : 'cold');
 const COLS = ['name', 'legal', 'activity', 'owner', 'role', 'phone', 'email', 'score', 'priority', 'opportunity', 'domain', 'location', 'website', 'siren'];
 
 export default function Dashboard({ email }: { email: string }) {
+  const { t } = useApp();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState('');
@@ -76,59 +78,53 @@ export default function Dashboard({ email }: { email: string }) {
 
   return (
     <div className="shell">
-      <header className="topbar">
-        <div className="wm" style={{ fontSize: 18 }}>lead<span>jet</span></div>
-        <div className="spacer" />
-        <span className="who">{email}</span>
-        <button className="btn" onClick={() => load()}>Refresh</button>
-        <button className="btn" onClick={() => signOut({ callbackUrl: '/login' })}>Sign out</button>
-      </header>
+      <Topbar email={email} onRefresh={load} />
 
       <main className="content">
         {leads.length === 0 && !loading ? (
           <div className="onboard card">
-            <h2>Install the leadjet CLI</h2>
-            <p>Pick your installer, then link this account. Your leads appear here after you push.</p>
+            <h2>{t('install.title')}</h2>
+            <p>{t('install.sub')}</p>
             <InstallCli />
             <div className="steps">
-              <div className="step"><span className="n">2</span><div><b>Link this account</b> <span className="mut">(valid 7 days)</span><div><code>leadjet link</code></div></div></div>
-              <div className="step"><span className="n">3</span><div><b>Find &amp; push leads</b><div><code>leadjet leads &quot;restaurants&quot; --city Lyon --push</code></div></div></div>
+              <div className="step"><span className="n">2</span><div><b>{t('step.link')}</b> <span className="mut">({t('step.linkNote')})</span><div><code>leadjet link</code></div></div></div>
+              <div className="step"><span className="n">3</span><div><b>{t('step.push')}</b><div><code>leadjet leads &quot;restaurants&quot; --city Lyon --push</code></div></div></div>
             </div>
-            <button className="btn red" onClick={() => load()}>I have pushed leads — Refresh</button>
+            <button className="btn red" onClick={() => load()}>{t('empty.refresh')}</button>
           </div>
         ) : (
           <>
             <div className="stats">
-              <div className="kpi"><b>{kpi.total}</b><span>leads</span></div>
-              <div className="kpi red"><b>{kpi.hot}</b><span>hot</span></div>
-              <div className="kpi"><b>{kpi.tel}</b><span>phone</span></div>
-              <div className="kpi"><b>{kpi.mail}</b><span>email</span></div>
+              <div className="kpi"><b>{kpi.total}</b><span>{t('kpi.leads')}</span></div>
+              <div className="kpi red"><b>{kpi.hot}</b><span>{t('kpi.hot')}</span></div>
+              <div className="kpi"><b>{kpi.tel}</b><span>{t('kpi.phone')}</span></div>
+              <div className="kpi"><b>{kpi.mail}</b><span>{t('kpi.email')}</span></div>
             </div>
             <div className="toolbar">
-              <input placeholder="Filter…" value={q} onChange={(e) => setQ(e.target.value)} />
+              <input placeholder={t('filter.ph')} value={q} onChange={(e) => setQ(e.target.value)} />
               <select value={pr} onChange={(e) => setPr(e.target.value)}>
-                <option value="">All priorities</option>
-                <option value="Chaud">Hot</option>
+                <option value="">{t('filter.all')}</option>
+                <option value="Chaud">{t('kpi.hot')}</option>
                 <option value="Tiède">Warm</option>
                 <option value="Froid">Cold</option>
               </select>
               <div className="spacer" />
               <span className="count">{rows.length} / {leads.length}</span>
-              <button className="btn" onClick={exportCsv}>Export CSV</button>
+              <button className="btn" onClick={exportCsv}>{t('exportCsv')}</button>
             </div>
 
             <div className="card tablecard"><div className="twrap">
               <table>
                 <thead><tr>
-                  <th onClick={() => sortBy('score')}>Score</th>
-                  <th onClick={() => sortBy('name')}>Company</th>
-                  <th onClick={() => sortBy('activity')}>Activity</th>
-                  <th onClick={() => sortBy('owner')}>Owner</th>
-                  <th onClick={() => sortBy('phone')}>Phone</th>
-                  <th onClick={() => sortBy('email')}>Email</th>
-                  <th onClick={() => sortBy('domain')}>Domain</th>
-                  <th onClick={() => sortBy('opportunity')}>Opportunity</th>
-                  <th onClick={() => sortBy('location')}>Location</th>
+                  <th onClick={() => sortBy('score')}>{t('tbl.score')}</th>
+                  <th onClick={() => sortBy('name')}>{t('tbl.company')}</th>
+                  <th onClick={() => sortBy('activity')}>{t('tbl.activity')}</th>
+                  <th onClick={() => sortBy('owner')}>{t('tbl.owner')}</th>
+                  <th onClick={() => sortBy('phone')}>{t('tbl.phone')}</th>
+                  <th onClick={() => sortBy('email')}>{t('tbl.email')}</th>
+                  <th onClick={() => sortBy('domain')}>{t('tbl.domain')}</th>
+                  <th onClick={() => sortBy('opportunity')}>{t('tbl.opportunity')}</th>
+                  <th onClick={() => sortBy('location')}>{t('tbl.location')}</th>
                 </tr></thead>
                 <tbody>
                   {rows.map((r, i) => (

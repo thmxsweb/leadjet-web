@@ -63,9 +63,9 @@ input:focus,select:focus{outline:none;border-color:var(--red-bd);box-shadow:0 0 
 .tablecard{overflow:hidden}
 .twrap{overflow:auto;max-height:calc(100vh - 340px)}
 table{width:100%;border-collapse:separate;border-spacing:0}
-thead th{position:sticky;top:0;background:#101116;color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;text-align:left;font-weight:700;padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer}
+thead th{position:sticky;top:0;background:var(--elev);color:var(--mut);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;text-align:left;font-weight:700;padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer}
 thead th:hover{color:var(--ink2)}
-tbody td{padding:8px 10px;border-bottom:1px solid #191b21;vertical-align:middle}
+tbody td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
 tbody tr:hover td{background:var(--elev)}
 .name{font-weight:600}.mut{color:var(--mut);font-size:11px}
 .sc{font-weight:800;padding:2px 7px;border-radius:6px;font-size:12px;min-width:32px;display:inline-block;text-align:center}
@@ -94,7 +94,7 @@ tbody tr:hover td{background:var(--elev)}
 
 /* dashboard viewer shell */
 .shell{min-height:100vh;display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--line);background:#0e0f12;position:sticky;top:0;z-index:10}
+.topbar{display:flex;align-items:center;gap:8px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:10}
 .topbar .logo{padding:0;font-size:18px}
 .spacer{flex:1}
 .who{color:var(--mut);font-size:12.5px;margin-right:2px}
@@ -121,6 +121,42 @@ tbody tr:hover td{background:var(--elev)}
 .step b{font-size:13px}
 .step div>div{margin-top:5px}
 @media(max-width:600px){.dl-row{grid-template-columns:1fr}}
+
+/* center the install/onboard box */
+.onboard{margin:8vh auto 0}
+
+/* light theme */
+:root[data-theme="light"]{
+  --bg:#f5f6f8;--panel:#ffffff;--elev:#f0f2f5;--elev2:#e7eaee;--line:#e3e6ea;--line2:#d3d8de;
+  --ink:#1a1d21;--ink2:#3b424a;--mut:#6b727c;
+  --red:#e5484d;--red-h:#cf3b40;--red-dim:rgba(229,72,77,.10);--red-bd:rgba(229,72,77,.35);
+  --green:#2f9e6f;--amber:#b8811d;
+}
+
+/* topbar controls */
+.icon-btn{height:34px;min-width:34px;padding:0 9px;display:inline-flex;align-items:center;gap:6px;justify-content:center;border:1px solid var(--line);background:var(--elev);color:var(--ink2);border-radius:8px;font-size:12px;font-weight:700}
+.icon-btn:hover{color:var(--ink);border-color:var(--line2)}
+.menu-wrap{position:relative;display:inline-flex}
+.backdrop{position:fixed;inset:0;z-index:40}
+.dropdown{position:absolute;top:42px;z-index:41;min-width:180px;background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:6px;box-shadow:0 12px 34px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:2px}
+.dropdown.left{left:0}.dropdown.right{right:0}
+.dropdown button{text-align:left;background:none;border:0;color:var(--ink2);padding:9px 10px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer}
+.dropdown button:hover{background:var(--elev);color:var(--ink)}
+.dropdown button.on{color:var(--red-h);font-weight:700}
+.dropdown button.danger{color:var(--red-h)}
+.dropdown .sep{height:1px;background:var(--line);margin:4px 2px}
+.user-btn{display:flex;align-items:center;gap:8px;background:none;border:0;color:var(--ink2);padding:4px 8px 4px 4px;border-radius:9px;cursor:pointer;max-width:260px}
+.user-btn:hover{background:var(--elev)}
+.user-btn .who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.avatar{flex:none;width:27px;height:27px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-weight:800;font-size:12px}
+.who.ok{color:var(--green)}
+/* account modal */
+.kv{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13px}
+.kv span{color:var(--mut)}
+.chiprow{display:flex;gap:6px}
+.chipbtn{height:30px;padding:0 12px;border:1px solid var(--line);background:var(--elev);color:var(--ink2);border-radius:7px;font-size:12px;font-weight:700;cursor:pointer}
+.chipbtn.on{background:var(--red);border-color:var(--red);color:#fff}
+.modal-foot{display:flex;justify-content:space-between;gap:8px;margin-top:18px}
 .prop{color:var(--amber);font-size:12px}
 .toolbar input{width:200px}
 td a{color:var(--red-h)}

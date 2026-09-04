@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useApp } from '@/lib/app-context';
 
 const REL = 'https://github.com/thmxsweb/leadjet/releases/latest/download';
 const NPM = 'npm i -g @thmxsweb/leadjet';
@@ -21,6 +22,7 @@ function detectOs(): string {
 }
 
 export default function InstallCli() {
+  const { t } = useApp();
   const [os, setOs] = useState('');
   const [copied, setCopied] = useState(false);
 
@@ -43,15 +45,15 @@ export default function InstallCli() {
       <div className="dl-row">
         {ordered.map((o) => (
           <a key={o.key} href={o.href} className={`dl ${o.key === os ? 'primary' : ''}`}>
-            <span className="dl-os">Download for {o.label}</span>
-            <span className="dl-sub">{o.sub}{o.key === os ? ' · detected' : ''}</span>
+            <span className="dl-os">{t('install.downloadFor')} {o.label}</span>
+            <span className="dl-sub">{o.sub}{o.key === os ? ` · ${t('install.detected')}` : ''}</span>
           </a>
         ))}
       </div>
-      <div className="or">or with npm (needs Node 18+)</div>
+      <div className="or">{t('install.orNpm')}</div>
       <div className="npm">
         <code>{NPM}</code>
-        <button className="btn" onClick={copyNpm}>{copied ? 'Copied' : 'Copy'}</button>
+        <button className="btn" onClick={copyNpm}>{copied ? t('install.copied') : t('install.copy')}</button>
       </div>
     </div>
   );
