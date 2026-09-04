@@ -65,7 +65,12 @@ export default function Topbar({ email, onRefresh }: { email: string; onRefresh:
         {menuOpen ? (
           <>
             <div className="backdrop" onClick={() => setMenuOpen(false)} />
-            <div className="dropdown right">
+            <div className="dropdown right menu">
+              <div className="dd-head">
+                <span className="avatar">{(email[0] || 'u').toUpperCase()}</span>
+                <div className="dd-id"><div className="dd-email">{email}</div><div className="dd-plan">Free plan</div></div>
+              </div>
+              <div className="sep" />
               <button onClick={() => { setModal('profile'); setMenuOpen(false); }}>{t('menu.profile')}</button>
               <button onClick={() => { onRefresh(); setMenuOpen(false); }}>{t('menu.refresh')}</button>
               <button onClick={unlink}>{t('menu.unlink')}</button>

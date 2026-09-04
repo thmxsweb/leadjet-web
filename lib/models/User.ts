@@ -4,6 +4,10 @@ const UserSchema = new Schema(
   {
     email: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
     name: { type: String },
+    fullName: { type: String },
+    dob: { type: String },
+    phone: { type: String },
+    image: { type: String }, // data URL (small, resized client-side)
     passwordHash: { type: String, required: true },
     emailVerified: { type: Date, default: null },
   },
