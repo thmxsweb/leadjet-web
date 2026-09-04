@@ -76,7 +76,7 @@ export default function Dashboard({ email }: { email: string }) {
   return (
     <div className="shell">
       <header className="topbar">
-        <div className="logo">lead<b>jet</b></div>
+        <div className="wm" style={{ fontSize: 18 }}>lead<span>jet</span></div>
         <div className="spacer" />
         <span className="who">{email}</span>
         <button className="btn" onClick={() => load()}>Refresh</button>

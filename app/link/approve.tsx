@@ -24,7 +24,7 @@ export default function Approve({ code, email }: { code: string; email: string }
   if (state === 'ok') {
     return (
       <div className="auth-card">
-        <div className="logo" style={{ padding: '0 0 6px' }}>lead<b>jet</b></div>
+        <div className="wm" style={{fontSize:20}}>lead<span>jet</span></div>
         <h1>Device linked</h1>
         <div className="note ok">Your CLI is now linked to <b>{email}</b> for 7 days. Return to your terminal.</div>
       </div>
@@ -33,7 +33,7 @@ export default function Approve({ code, email }: { code: string; email: string }
 
   return (
     <div className="auth-card">
-      <div className="logo" style={{ padding: '0 0 6px' }}>lead<b>jet</b></div>
+      <div className="wm" style={{fontSize:20}}>lead<span>jet</span></div>
       <h1>Link your CLI</h1>
       {msg ? <div className="note bad">{msg}</div> : null}
       <p style={{ color: 'var(--mut)', fontSize: 13 }}>
